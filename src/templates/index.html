@@ -1,0 +1,69 @@
+{# /* vim: set filetype=jinja : */ #}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Note index</title>
+  <style>
+  html * {
+    font-family: sans-serif;
+  }
+  a {
+    target-new: tab;
+  }
+  h1 {
+    text-align: center;
+  }
+  div.index {
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    min-width: 480px;
+  }
+  div.section {
+    position: relative;
+    font-size: 12px;
+    margin-left: 50px
+  }
+  .highlight {
+    color: red;
+  }
+  </style>
+  {% for lib in libraries %}
+  <script src="{{ lib }}">
+  </script>
+  {% endfor %}
+</head>
+<body>
+  <div class="index">
+    {% for name, group in notes.iteritems() recursive %}
+    <h1 id="{{ group.identifier }}">{{ name }}</h1>
+    <div class="section" id="{{ group.identifier }}Section">
+    {% for note in group.notes %}
+      <p><a href="{{ note.path }}">{{ note.name }}</a></p>
+    {% endfor %}
+    {{ loop(group.children.iteritems()) }}
+    </div>
+    {% endfor %}
+  </div>
+  <script type="text/javascript">
+  $("h1").bind({
+    mouseover: function() {
+      $(this).toggleClass("highlight", true);
+    },
+    mouseout: function() {
+      $(this).toggleClass("highlight", false);
+    },
+    click: function () {
+    $("div#" + $(this).attr("id") + "Section").toggle({
+          effect: "fade", 
+          duration: 250,
+          easing: "easeInOutCubic",
+        });
+    }
+  });
+  $("div.section").hide();
+  $("a").attr("target", "_newtab");
+  </script>
+</body>
+</html>

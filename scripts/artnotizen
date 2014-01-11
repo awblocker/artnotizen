@@ -1,0 +1,41 @@
+#!python
+# /* vim: set filetype=python : */
+"""Artnotizen organizes all dated files in a given directory in year/month/day
+folders, compiles are markdown files to HTML, and constructs an easy to navigate
+single-page index in index.html."""
+import argparse
+import sys
+import artnotizen
+
+def main(argv):
+    """Main function for script
+
+    Args:
+        argv: list of commandline arguments, typically sys.argv[1:]
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument("dir", metavar="DIR", nargs="?", default=".",
+                        help="Directory containing notes.")
+    parser.add_argument("--depth", default="month",
+                        choices=("year", "month", "week"),
+                        help="Depth of index")
+    parser.add_argument("--markdown_ext", metavar="EXT",
+                        default=".md",
+                        help="Extension to identify markdown files.")
+    parser.add_argument("--markdown_cmd", metavar="CMD",
+                        default="pandoc -Ss",
+                        help="Command to compile markdown to html."
+                        " Must write output to stdout.")
+    parser.add_argument("--template_path", metavar="DIR",
+                        default="~/.artnotizen/",
+                        help="Directory for templates."
+                        " If not found, the package version is used.")
+    args = parser.parse_args(argv)
+    notes, others = artnotizen.organize_notes(args.dir)
+    compiled = artnotizen.compile_markdown(notes, args.markdown_ext,
+                                           args.markdown_cmd)
+    artnotizen.build_index(compiled, others, args.dir, args.template_path,
+                           args.depth)
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
