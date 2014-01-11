@@ -248,7 +248,7 @@ def build_index(notes, others, directory, template_path, depth):
         env = Environment(loader=PackageLoader("artnotizen"))
     libraries = download_libraries(_LIBRARY_URLS, directory)
     env.globals = {
-        "notes": index_data(notes + others, directory, depth),
+        "notes": index_data(set(notes + others), directory, depth),
         "libraries": libraries,
     }
     template = env.get_template("index.html")
